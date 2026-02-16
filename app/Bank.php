@@ -2,8 +2,8 @@
 
 namespace App;
 
+use App\DTOs\SentTransactionDTO;
 use App\Models\Transaction;
-use SentTransaction;
 
 abstract class Bank
 {
@@ -22,9 +22,10 @@ abstract class Bank
         }
     }
 
-     public function send(SentTransaction $transaction){
-
-     }
+    public function send(SentTransactionDTO $transaction): string
+    {
+        return $transaction->toXml();
+    }
 
     abstract protected function parse(string $transaction);
 

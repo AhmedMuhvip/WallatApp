@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Builders\SentTransactionBuilder;
 use App\Http\Requests\HookRequest;
+use Illuminate\Http\Request;
 
 class HookController extends Controller
 {
@@ -21,5 +23,25 @@ class HookController extends Controller
         $bank->receive($transactionData);
         return response()->json(['message' => 'success']);
 
+    }
+
+    public function sent(Request $request)
+    {
+        $bankName = $request->input('bank');
+
+        if (!$bankName) {
+            return response()->json(['message' => 'Bank is required'], 400);
+        }
+
+        $sentTransaction = SentTransactionBuilder::create()
+            ->fromRequest($request);
+
+        $bankClass = 'App\\' . $bankName . 'Bank';
+
+        $bank = new $bankClass();
+
+        $xml = $bank->send($sentTransaction);
+
+        return response($xml, 200);
     }
 }
